@@ -64,19 +64,51 @@
 		BE22B41B23ECE6C30087A37D /* ProgrammaticPhotoJournal */ = {
 			isa = PBXGroup;
 			children = (
-				BE22B41C23ECE6C30087A37D /* AppDelegate.swift */,
-				BE22B41E23ECE6C30087A37D /* SceneDelegate.swift */,
-				BE22B42023ECE6C30087A37D /* ViewController.swift */,
-				BE22B43623ECF9F50087A37D /* DetailViewController.swift */,
-				BE22B43023ECE7CE0087A37D /* MainView.swift */,
-				BE22B43823ECFD9E0087A37D /* DetailView.swift */,
-				BE22B43423ECF8310087A37D /* PhotoCell.swift */,
-				BE22B43223ECF71F0087A37D /* PhotoCell.xib */,
-				BE22B42523ECE6C50087A37D /* Assets.xcassets */,
-				BE22B42723ECE6C50087A37D /* LaunchScreen.storyboard */,
+				BE61848123EE093700CA891A /* Cells */,
+				BE61848023EE091800CA891A /* Views */,
+				BE61847F23EE08FC00CA891A /* Controllers */,
+				BE61847E23EE08C000CA891A /* Supporting Files */,
 				BE22B42A23ECE6C50087A37D /* Info.plist */,
 			);
 			path = ProgrammaticPhotoJournal;
+			sourceTree = "<group>";
+		};
+		BE61847E23EE08C000CA891A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BE22B42723ECE6C50087A37D /* LaunchScreen.storyboard */,
+				BE22B42523ECE6C50087A37D /* Assets.xcassets */,
+				BE22B41E23ECE6C30087A37D /* SceneDelegate.swift */,
+				BE22B41C23ECE6C30087A37D /* AppDelegate.swift */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BE61847F23EE08FC00CA891A /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				BE22B43623ECF9F50087A37D /* DetailViewController.swift */,
+				BE22B42023ECE6C30087A37D /* ViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		BE61848023EE091800CA891A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BE22B43823ECFD9E0087A37D /* DetailView.swift */,
+				BE22B43023ECE7CE0087A37D /* MainView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		BE61848123EE093700CA891A /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				BE22B43223ECF71F0087A37D /* PhotoCell.xib */,
+				BE22B43423ECF8310087A37D /* PhotoCell.swift */,
+			);
+			path = Cells;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

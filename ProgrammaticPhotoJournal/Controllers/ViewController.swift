@@ -47,7 +47,7 @@ class ViewController: UIViewController {
     @objc func onClickedToolbeltButton() {
         let detailVC = DetailViewController()
         detailVC.modalPresentationStyle = .fullScreen
-            present(detailVC, animated: true)
+        present(detailVC, animated: true, completion: nil)
     }
     
     
