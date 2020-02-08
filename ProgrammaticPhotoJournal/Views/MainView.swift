@@ -33,7 +33,6 @@ class MainView: UIView {
     
     func commonInit() {
         configureCollectionView()
-//        configureToolBar()
     }
     
     func configureCollectionView() {

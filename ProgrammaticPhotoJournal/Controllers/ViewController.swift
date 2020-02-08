@@ -10,13 +10,23 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    let dataPersistance = PersistenceHelper(filename: "images.plist")
+    
     var mainView = MainView()
     
+    var selectedImage: UIImage?
+    
+    var imageObjects = [ImageObject]() {
+        didSet {
+            DispatchQueue.main.async {
+                self.mainView.collectionView.reloadData()
+            }
+        }
+    }
+   
     override func loadView() {
         view = mainView
-        //        self.navigationController?.toolbarItems = [UIBarButtonItem]()
         items.append( UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil) )
-        
     }
     
     var items = [UIBarButtonItem]()
@@ -25,14 +35,22 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.isHidden = true
-//        navigationBar.backgroundColor = .systemGray
         mainView.collectionView.dataSource = self
         mainView.collectionView.delegate = self
-        //        mainView.collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "photoCell")
         mainView.collectionView.register(UINib(nibName: "PhotoCell", bundle: nil), forCellWithReuseIdentifier: "photoCell")
         configureToolBar()
-        
+        loadImageObjects()
     }
+    
+    
+    private func loadImageObjects() {
+         do {
+            imageObjects = try dataPersistance.loadEvents()
+            print("there are \(imageObjects.count) images saved")
+         } catch {
+             print("error, could not load images")
+         }
+     }
     
     func configureToolBar() {
         self.navigationController?.isToolbarHidden = false
@@ -47,23 +65,25 @@ class ViewController: UIViewController {
     @objc func onClickedToolbeltButton() {
         let detailVC = DetailViewController()
         detailVC.modalPresentationStyle = .fullScreen
+//        detailVC.imageObject = imageObjects
+        detailVC.photosDelegate = self
         present(detailVC, animated: true, completion: nil)
     }
-    
-    
-    
     
 }
 
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 50
+        return imageObjects.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? PhotoCell else {
             fatalError("could not get cell")
         }
+        
+        let photos = imageObjects[indexPath.row]
+        cell.configuredCell(imageObject: photos)
         
         return cell
     }
@@ -74,5 +94,19 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
         let maxWidth: CGFloat = UIScreen.main.bounds.size.width
         let itemWidth: CGFloat = maxWidth * 0.90
         return CGSize(width: itemWidth, height: itemWidth)
+    }
+}
+
+extension ViewController: AddPhotoToCollection {
+    func updateCollectionView(images: ImageObject) {
+        imageObjects.append(images)
+        do {
+            try dataPersistance.create(item: images)
+        } catch {
+            print("could not create")
+        }
+        
+        mainView.collectionView.reloadData()
+        print("there are \(imageObjects.count) images saved")
     }
 }

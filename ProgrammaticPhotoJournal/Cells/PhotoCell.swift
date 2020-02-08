@@ -15,8 +15,13 @@ class PhotoCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = 20.0
-        backgroundColor = .orange
-     
     }
+    
+    func configuredCell(imageObject: ImageObject) {
+    guard let image = UIImage(data: imageObject.imageData) else {
+        return
+    }
+        photoImageView.image = image
+}
     
 }

@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class DetailView: UIView {
     
     public lazy var cameraButton: UIButton = {
@@ -55,14 +56,15 @@ class DetailView: UIView {
     
     public lazy var textField: UITextField = {
         let textField = UITextField()
-        textField.text = "Text goes here"
-        textField.backgroundColor = .systemRed
+        textField.placeholder = "Caption goes here"
+        textField.backgroundColor = .systemBackground
+        textField.isUserInteractionEnabled = true
         return textField
     }()
     
     public lazy var photo: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(systemName: "gear")
+        image.image = UIImage(named: "seattle")
         image.contentMode = .scaleAspectFit
         image.clipsToBounds = true
         image.backgroundColor = .systemGray3
@@ -74,10 +76,6 @@ class DetailView: UIView {
         return toolBar
     }()
     
-    //    public lazy var toolBar: UIToolbar = {
-    //        let toolBar = UIToolbar()
-    //        return toolBar
-    //    }()
     
     override init(frame: CGRect) {
         super.init(frame: UIScreen.main.bounds)
@@ -115,9 +113,9 @@ class DetailView: UIView {
         photo.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             photo.topAnchor.constraint(equalTo: textField.bottomAnchor),
-            photo.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            photo.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            photo.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.72)
+            photo.leadingAnchor.constraint(equalTo: leadingAnchor),
+            photo.trailingAnchor.constraint(equalTo: trailingAnchor),
+            photo.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.70)
         ])
     }
     
@@ -135,19 +133,16 @@ class DetailView: UIView {
          
          buttonStackViewTwo.translatesAutoresizingMaskIntoConstraints = false
          NSLayoutConstraint.activate([
-             //            buttonStackView.centerXAnchor.constraint(equalTo: centerXAnchor),
             buttonStackViewTwo.topAnchor.constraint(equalTo: photo.bottomAnchor),
              buttonStackViewTwo.leadingAnchor.constraint(equalTo: leadingAnchor),
              buttonStackViewTwo.trailingAnchor.constraint(equalTo: trailingAnchor),
              buttonStackViewTwo.heightAnchor.constraint(equalToConstant: 50)
-             //            buttonStackView.widthAnchor.constraint(equalTo: widthAnchor)
          ])
         
     }
     
     
 
-    
     func configureButtonStackView() {
         addSubview(buttonStackView)
         buttonStackView.addArrangedSubview(cancelButton)
@@ -162,12 +157,11 @@ class DetailView: UIView {
         
         buttonStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            //            buttonStackView.centerXAnchor.constraint(equalTo: centerXAnchor),
             buttonStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             buttonStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
             buttonStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             buttonStackView.heightAnchor.constraint(equalToConstant: 50)
-            //            buttonStackView.widthAnchor.constraint(equalTo: widthAnchor)
+            
         ])
     }
     

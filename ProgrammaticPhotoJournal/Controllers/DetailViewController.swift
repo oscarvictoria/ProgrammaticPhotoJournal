@@ -8,14 +8,25 @@
 
 import UIKit
 
+protocol AddPhotoToCollection {
+    func updateCollectionView(images: ImageObject)
+}
+
 class DetailViewController: UIViewController {
     
     var detailView = DetailView()
     
-    //    var items = [UIBarButtonItem]()
-    //
-    //    var itemsTwo = [UIBarButtonItem]()
+    var imagePickerController = UIImagePickerController()
     
+    var selectedImage: UIImage?
+    
+    var imageObject: ImageObject?
+    
+    let dataPersistance = PersistenceHelper(filename: "images.plist")
+    
+    var imageObjects = [ImageObject]()
+    
+    var photosDelegate: AddPhotoToCollection?
     
     override func loadView() {
         view = detailView
@@ -25,16 +36,21 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         configureButtons()
-        
+        imagePickerController.delegate = self
     }
+    
+    private func loadImageObjects() {
+         do {
+            imageObjects = try dataPersistance.loadEvents().reversed()
+         } catch {
+             print("error, could not load images")
+         }
+     }
     
     func configureButtons() {
         detailView.cancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
-        
         detailView.saveButton.addTarget(self, action: #selector(save), for: .touchUpInside)
-        
         detailView.cameraButton.addTarget(self, action: #selector(camera), for: .touchUpInside)
-        
         detailView.photoButton.addTarget(self, action: #selector(photos), for: .touchUpInside)
     }
     
@@ -43,35 +59,42 @@ class DetailViewController: UIViewController {
     }
     
     
-    
-    
-    //    func configureToolBar() {
-    //        self.navigationController?.isToolbarHidden = false
-    //        items.append( UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel)))
-    //        items.append( UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil) )
-    //        items.append( UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(save)))
-    //        detailView.toolBar.items = items
-    //    }
-    
-    //    func configureBottomToolBar() {
-    //        self.navigationController?.isToolbarHidden = false
-    //        itemsTwo.append( UIBarButtonItem(barButtonSystemItem: .search , target: self, action: #selector(photos)))
-    //        itemsTwo.append( UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil) )
-    //        itemsTwo.append( UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(camera)))
-    //        detailView.bottomToolBar.items = itemsTwo
-    //        detailView.bottomToolBar.frame(forAlignmentRect: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 35))
-    //    }
-    
-    //    @objc func cancel() {
-    //        dismiss(animated: true, completion: nil)
-    //    }
-    
     @objc func save() {
-        print("save button pressed")
+        guard let image = selectedImage else {
+            print("image is nil")
+            return
+        }
+        
+//        print("original image size is \(image.size)")
+        
+        guard let resizedImageData = image.jpegData(compressionQuality: 1.0) else {
+            return
+        }
+        
+        // create an image object using the image selected
+        let imageObject = ImageObject(imageData: resizedImageData, date: Date())
+        //        let imageObject = ImageObject(imageData: resizedImageData, date: Date())
+        
+        // insert new imageObject into imageObjects
+        imageObjects.insert(imageObject, at: 0)
+        
+        // Persist imageObject to documents directory
+        do {
+            try dataPersistance.create(item: imageObject)
+            print("photo succesfully saved")
+        } catch {
+            print("saving error")
+        }
+        
+        loadImageObjects()
+        
+        photosDelegate?.updateCollectionView(images: imageObject)
+        
+         self.dismiss(animated: true, completion: nil)
     }
     
     @objc func photos() {
-        print("photo button pressed")
+       self.showImageController(isCameraSelected: false)
         
     }
     
@@ -79,6 +102,30 @@ class DetailViewController: UIViewController {
         print("camera button pressed")
     }
     
-    
+    private func showImageController(isCameraSelected: Bool) {
+        imagePickerController.sourceType = .photoLibrary
+        if isCameraSelected {
+            imagePickerController.sourceType = .camera
+        }
+        present(imagePickerController, animated: true)
+    }
     
 }
+
+extension DetailViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else {
+            print("Image selected not found")
+            return
+        }
+        selectedImage = image
+        detailView.photo.image = image
+        
+        dismiss(animated: true)
+    }
+}
+
