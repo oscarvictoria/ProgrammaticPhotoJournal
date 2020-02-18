@@ -54,12 +54,11 @@ class DetailView: UIView {
         return buttonStack
     }()
     
-    public lazy var textField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Caption goes here"
-        textField.backgroundColor = .systemBackground
-        textField.isUserInteractionEnabled = true
-        return textField
+    public lazy var textView: UITextView = {
+        let textView = UITextView()
+        textView.backgroundColor = .systemBackground
+        textView.isUserInteractionEnabled = true
+        return textView
     }()
     
     public lazy var photo: UIImageView = {
@@ -97,13 +96,13 @@ class DetailView: UIView {
     
     
     func configureTextField() {
-        addSubview(textField)
-        textField.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(textView)
+        textView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            textField.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor),
-            textField.leadingAnchor.constraint(equalTo: leadingAnchor),
-            textField.trailingAnchor.constraint(equalTo:trailingAnchor),
-            textField.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.1)
+            textView.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor),
+            textView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            textView.trailingAnchor.constraint(equalTo:trailingAnchor),
+            textView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.1)
         ])
     }
     
@@ -112,7 +111,7 @@ class DetailView: UIView {
         addSubview(photo)
         photo.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            photo.topAnchor.constraint(equalTo: textField.bottomAnchor),
+            photo.topAnchor.constraint(equalTo: textView.bottomAnchor),
             photo.leadingAnchor.constraint(equalTo: leadingAnchor),
             photo.trailingAnchor.constraint(equalTo: trailingAnchor),
             photo.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.70)

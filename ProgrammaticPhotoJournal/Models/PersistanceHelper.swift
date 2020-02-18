@@ -9,103 +9,119 @@
 import Foundation
 
 
-enum DataPersistenceError: Error { // conforming to the Error protocol
-  case savingError(Error) // associative value
-  case fileDoesNotExist(String)
-  case noData
-  case decodingError(Error)
-  case deletingError(Error)
+public enum DataPersistenceError: Error {
+  case propertyListEncodingError(Error)
+  case propertyListDecodingError(Error)
+  case writingError(Error)
+  case deletingError
+  case noContentsAtPath(String)
 }
 
-class PersistenceHelper {
+//typealias Writable = Codable & Equatable
+
+// Data persistance is now type Generic
+class DataPersistence<T: Codable& Equatable > {
   
-  // CRUD - create, read, update, delete
+  private let filename: String
   
-  // array of events
-  private var events = [ImageObject]()
-  
-  private var filename: String
-  
-  init(filename: String) {
+  private var items: [T]
+      
+  public init(filename: String) {
     self.filename = filename
+    self.items = []
   }
   
-  private func save() throws {
-    // step 1.
-     // get url path to the file that the Event will be saved to
-     let url = FileManager.pathToDocumentsDirectory(with: filename)
-    
-    // events array will be object being converted to Data
-    // we will use the Data object and write (save) it to documents directory
+  private func saveItemsToDocumentsDirectory() throws {
     do {
-      // step 3.
-      // convert (serialize) the events array to Data
-      let data = try PropertyListEncoder().encode(events)
-      
-      // step 4.
-      // writes, saves, persist the data to the documents directory
+      let url = FileManager.getPath(with: filename, for: .documentsDirectory)
+      let data = try PropertyListEncoder().encode(items)
       try data.write(to: url, options: .atomic)
     } catch {
-      // step 5.
-      throw DataPersistenceError.savingError(error)
+      throw DataPersistenceError.writingError(error)
     }
   }
   
-  // for re-ordering
-  public func reorderEvents(events: [ImageObject]) {
-    self.events = events
-    try? save()
-  }
-  
-  // DRY - don't repeat yourself
-  
-  // create - save item to documents directory
-  public func create(item: ImageObject) throws {
-    // step 2.
-    // append new event to the events array
-    events.append(item)
-    
+  // Create
+  public func createItem(_ item: T) throws {
+    _ = try? loadItems()
+    items.append(item)
     do {
-      try save()
+      try saveItemsToDocumentsDirectory()
     } catch {
-      throw DataPersistenceError.savingError(error)
+      throw DataPersistenceError.writingError(error)
     }
   }
-
-  // read - load (retrieve) items from documents directory
-  public func loadEvents() throws -> [ImageObject] {
-    // we need access to the filename URL that we are reading from
-    let url = FileManager.pathToDocumentsDirectory(with: filename)
-    
-    // check if file exist
-    // to convert URL to String we use .path on the URL
-    if FileManager.default.fileExists(atPath: url.path) {
-      if let data = FileManager.default.contents(atPath: url.path) {
-        do {
-          events = try PropertyListDecoder().decode([ImageObject].self, from: data)
-        } catch {
-          throw DataPersistenceError.decodingError(error)
+  
+  // Read
+  public func loadItems() throws -> [T] {
+    let path = FileManager.getPath(with: filename, for: .documentsDirectory).path
+     if FileManager.default.fileExists(atPath: path) {
+       if let data = FileManager.default.contents(atPath: path) {
+         do {
+           items = try PropertyListDecoder().decode([T].self, from: data)
+         } catch {
+          throw DataPersistenceError.propertyListDecodingError(error)
+         }
+       }
+     }
+    return items
+  }
+  
+  // for re-ordering, and keeping date in sync
+  public func synchronize(_ items: [T]) {
+    self.items = items
+    try? saveItemsToDocumentsDirectory()
+  }
+  
+  // Update
+    @discardableResult // silances the warning if the return value is not used by the caller
+    public func update(_ oldItem: T, with newItem: T)-> Bool{
+        if let index = items.firstIndex(of: oldItem) {
+        let result = update(newItem, at: index)
+        return result
         }
-      } else {
-        throw DataPersistenceError.noData
-      }
+        return false
     }
-    else {
-      throw DataPersistenceError.fileDoesNotExist(filename)
+    
+    @discardableResult // silances the warning if the return value is not used by the caller
+    public func update(_ item: T,at index: Int)-> Bool {
+        items[index] = item
+        
+        do {
+          try saveItemsToDocumentsDirectory()
+            return true
+        } catch {
+            return false
+        }
     }
-    return events
+  
+  // Delete
+  public func deleteItem(at index: Int) throws {
+    items.remove(at: index)
+    do {
+      try saveItemsToDocumentsDirectory()
+    } catch {
+      throw DataPersistenceError.deletingError
+    }
   }
   
-  // delete - remove item from documents directory
-  public func delete(event index: Int) throws {
-    // remove the item from the events array
-    events.remove(at: index)
-    
-    // save our events array to the documents directory
-    do {
-      try save()
-    } catch {
-      throw DataPersistenceError.deletingError(error)
+  public func hasItemBeenSaved(_ item: T) -> Bool {
+    guard let items = try? loadItems() else {
+      return false
     }
+    self.items = items
+    if let _ = self.items.firstIndex(of: item) {
+      return true
+    }
+    return false
+  }
+  
+  public func removeAll() {
+    guard let loadedItems = try? loadItems() else {
+      return
+    }
+    items = loadedItems
+    items.removeAll()
+    try? saveItemsToDocumentsDirectory()
   }
 }

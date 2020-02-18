@@ -7,9 +7,16 @@
 //
 
 import UIKit
+import AVFoundation
+
+enum PhotoStatus {
+    case old
+    case new
+}
 
 protocol AddPhotoToCollection {
-    func updateCollectionView(images: ImageObject)
+    func updateCollectionView(old: ImageObject?, new: ImageObject, photoState: PhotoStatus)
+    func editPhoto(original: ImageObject, newPhoto: ImageObject)
 }
 
 class DetailViewController: UIViewController {
@@ -20,13 +27,24 @@ class DetailViewController: UIViewController {
     
     var selectedImage: UIImage?
     
-    var imageObject: ImageObject?
+    var photoState = PhotoStatus.new
     
-    let dataPersistance = PersistenceHelper(filename: "images.plist")
+    var caption = "Hello User"
+    
+    var imageObject: ImageObject? {
+        didSet {
+            photoState = .old
+        }
+    }
+    
+    
+    
+    let dataPersistance = DataPersistence<ImageObject>(filename: "images.plist")
     
     var imageObjects = [ImageObject]()
     
     var photosDelegate: AddPhotoToCollection?
+    
     
     override func loadView() {
         view = detailView
@@ -35,17 +53,24 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        guard let image = imageObject?.imageData else {
+                 return
+             }
+        detailView.photo.image = UIImage(data: image)
         configureButtons()
         imagePickerController.delegate = self
+        detailView.textView.delegate = self
+        detailView.textView.text = "Caption Goes Here"
+        detailView.textView.textColor = UIColor.lightGray
     }
     
     private func loadImageObjects() {
-         do {
-            imageObjects = try dataPersistance.loadEvents().reversed()
-         } catch {
-             print("error, could not load images")
-         }
-     }
+        do {
+            imageObjects = try dataPersistance.loadItems()
+        } catch {
+            print("error, could not load images")
+        }
+    }
     
     func configureButtons() {
         detailView.cancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
@@ -65,22 +90,22 @@ class DetailViewController: UIViewController {
             return
         }
         
-//        print("original image size is \(image.size)")
+        let size = UIScreen.main.bounds.size
         
-        guard let resizedImageData = image.jpegData(compressionQuality: 1.0) else {
+        let rec = AVMakeRect(aspectRatio: image.size, insideRect: CGRect(origin: CGPoint.zero, size: size))
+        
+        
+        let resizeImage = image.resizeImage(to: rec.size.width, height: rec.size.height)
+        
+        guard let resizedImageData = resizeImage.jpegData(compressionQuality: 1.0) else {
             return
         }
         
         // create an image object using the image selected
-        let imageObject = ImageObject(imageData: resizedImageData, date: Date())
-        //        let imageObject = ImageObject(imageData: resizedImageData, date: Date())
-        
-        // insert new imageObject into imageObjects
-        imageObjects.insert(imageObject, at: 0)
-        
-        // Persist imageObject to documents directory
+        let imageObject = ImageObject(imageText: detailView.textView.text ?? "" , imageData: resizedImageData, date: Date())
+
         do {
-            try dataPersistance.create(item: imageObject)
+            try dataPersistance.createItem(imageObject)
             print("photo succesfully saved")
         } catch {
             print("saving error")
@@ -88,13 +113,14 @@ class DetailViewController: UIViewController {
         
         loadImageObjects()
         
-        photosDelegate?.updateCollectionView(images: imageObject)
+        photosDelegate?.updateCollectionView(old: nil, new: imageObject, photoState: photoState)
         
-         self.dismiss(animated: true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
+    
     @objc func photos() {
-       self.showImageController(isCameraSelected: false)
+        self.showImageController(isCameraSelected: false)
         
     }
     
@@ -129,3 +155,24 @@ extension DetailViewController: UIImagePickerControllerDelegate, UINavigationCon
     }
 }
 
+extension DetailViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == UIColor.lightGray {
+            textView.text = ""
+            textView.textColor = UIColor.black
+        }
+    }
+  
+}
+
+
+
+extension UIImage {
+    func resizeImage(to width: CGFloat, height: CGFloat) -> UIImage {
+        let size = CGSize(width: width, height: height)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { (context) in
+            self.draw(in: CGRect(origin: .zero, size: size))
+        }
+    }
+}

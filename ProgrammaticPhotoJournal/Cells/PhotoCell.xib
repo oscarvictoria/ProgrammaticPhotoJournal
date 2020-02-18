@@ -20,17 +20,37 @@
                         <rect key="frame" x="0.0" y="1" width="338" height="143"/>
                     </imageView>
                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Text Goes Here" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3H3-dj-6LI">
-                        <rect key="frame" x="0.0" y="157.5" width="338" height="84.5"/>
+                        <rect key="frame" x="0.0" y="169.5" width="338" height="72.5"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <color key="textColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                     </textView>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R5G-56-z5c">
+                        <rect key="frame" x="268" y="152" width="50" height="18"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="50" id="heB-lm-Z7r"/>
+                        </constraints>
+                        <state key="normal" backgroundImage="ellipsis" catalog="system"/>
+                        <connections>
+                            <action selector="editButtonPressed:" destination="PFn-za-jYt" eventType="touchUpInside" id="GPi-TV-7gv"/>
+                        </connections>
+                    </button>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vMs-NO-rI9">
+                        <rect key="frame" x="0.0" y="145" width="82" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
+                    <constraint firstAttribute="trailing" secondItem="R5G-56-z5c" secondAttribute="trailing" constant="20" id="0ed-lh-u45"/>
                     <constraint firstItem="tlx-4N-JYa" firstAttribute="leading" secondItem="Pvg-Fa-Ib7" secondAttribute="leading" id="6Ct-YL-wWB"/>
+                    <constraint firstItem="R5G-56-z5c" firstAttribute="top" secondItem="tlx-4N-JYa" secondAttribute="bottom" id="AEl-hk-EoL"/>
                     <constraint firstAttribute="trailing" secondItem="tlx-4N-JYa" secondAttribute="trailing" id="Fpl-nb-xF0"/>
-                    <constraint firstItem="3H3-dj-6LI" firstAttribute="height" secondItem="Pvg-Fa-Ib7" secondAttribute="height" multiplier="0.35" id="H1t-OE-6xj"/>
+                    <constraint firstItem="vMs-NO-rI9" firstAttribute="top" secondItem="tlx-4N-JYa" secondAttribute="bottom" id="GdL-A2-PLn"/>
+                    <constraint firstItem="3H3-dj-6LI" firstAttribute="height" secondItem="Pvg-Fa-Ib7" secondAttribute="height" multiplier="0.3" id="H1t-OE-6xj"/>
+                    <constraint firstItem="vMs-NO-rI9" firstAttribute="leading" secondItem="Pvg-Fa-Ib7" secondAttribute="leading" id="Ip8-5b-dlT"/>
                     <constraint firstAttribute="trailing" secondItem="3H3-dj-6LI" secondAttribute="trailing" id="Pba-B3-reK"/>
                     <constraint firstItem="3H3-dj-6LI" firstAttribute="leading" secondItem="Pvg-Fa-Ib7" secondAttribute="leading" id="XA4-Yi-47x"/>
                     <constraint firstItem="tlx-4N-JYa" firstAttribute="height" secondItem="Pvg-Fa-Ib7" secondAttribute="height" multiplier="0.6" id="a31-wK-842"/>
@@ -41,6 +61,8 @@
             <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
             <size key="customSize" width="338" height="241"/>
             <connections>
+                <outlet property="dateLabel" destination="vMs-NO-rI9" id="EyZ-V0-Gng"/>
+                <outlet property="editButton" destination="R5G-56-z5c" id="A2I-xk-c5I"/>
                 <outlet property="photoImageView" destination="tlx-4N-JYa" id="9Eu-DS-adN"/>
                 <outlet property="textField" destination="3H3-dj-6LI" id="yCL-m5-epR"/>
             </connections>
@@ -48,6 +70,7 @@
         </collectionViewCell>
     </objects>
     <resources>
+        <image name="ellipsis" catalog="system" width="64" height="20"/>
         <image name="photo" catalog="system" width="64" height="48"/>
     </resources>
 </document>
