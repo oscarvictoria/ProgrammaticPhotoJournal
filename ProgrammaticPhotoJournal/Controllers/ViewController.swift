@@ -145,10 +145,6 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
 
 extension ViewController: AddPhotoToCollection {
     func editPhoto(original: ImageObject, newPhoto: ImageObject) {
-//        let index = imageObjects.firstIndex(of: original)!
-//             imageObjects.remove(at: index)
-//             imageObjects.insert(newPhoto, at: index)
-//             dataPersistance.update(original, with: newPhoto)
     }
     
     func updateCollectionView(old: ImageObject?, new: ImageObject, photoState: PhotoStatus) {
@@ -160,7 +156,6 @@ extension ViewController: AddPhotoToCollection {
             }
             imageObjects.append(new)
         } else {
-//            dataPersistance.update(old, with: new)
             let index = imageObjects.firstIndex(of: old!)!
                  imageObjects.remove(at: index)
                  imageObjects.insert(new, at: index)
@@ -169,17 +164,6 @@ extension ViewController: AddPhotoToCollection {
         }
     }
     
-//    private func update(oldPhoto:ImageObject , with newPhoto:ImageObject ) {
-//      // update item in documents directory
-//        dataPersistance.update(oldPhoto, with: newPhoto)
-//
-//      // call load items to update events array
-//      // retrieve objects from documents directory
-//      // append to our events array
-//      // reload the table view
-//        loadImageObjects()
-//
-//    }
     
 }
 
@@ -198,8 +182,6 @@ extension ViewController: PhotoCellDelegate {
         }
         let editAction = UIAlertAction(title: "Edit", style: .default) { (action) in
             self.updatePicture(photo: imageObject)
-//            let downloadView = DetailViewController()
-//            self.present(downloadView, animated:true)
         }
         
         let shareAction = UIAlertAction(title: "Share", style: .default)

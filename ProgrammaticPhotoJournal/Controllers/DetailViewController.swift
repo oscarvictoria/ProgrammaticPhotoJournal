@@ -36,11 +36,7 @@ class DetailViewController: UIViewController {
             photoState = .old
         }
     }
-    
-    //let dataPersistance = DataPersistence<ImageObject>(filename: "images.plist")
-    
-    //var imageObjects = [ImageObject]()
-    
+   
     var photosDelegate: AddPhotoToCollection?
     
     
@@ -68,13 +64,6 @@ class DetailViewController: UIViewController {
         detailView.photo.image = selectedImage
     }
     
-//    private func loadImageObjects() {
-//        do {
-//            imageObjects = try dataPersistance.loadItems()
-//        } catch {
-//            print("error, could not load images")
-//        }
-//    }
     
     func configureButtons() {
         detailView.cancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
@@ -105,33 +94,27 @@ class DetailViewController: UIViewController {
             return
         }
         
-        // create an image object using the image selected
         let imageObject = ImageObject(imageText: detailView.textView.text ?? "" , imageData: resizedImageData, date: Date())
         
-//        do {
-//            try dataPersistance.createItem(imageObject)
-//            print("photo succesfully saved")
-//        } catch {
-//            print("saving error")
-//        }
-        
-//        loadImageObjects()
         
         photosDelegate?.updateCollectionView(old: self.imageObject, new: imageObject, photoState: photoState)
-        
-        
         
         self.dismiss(animated: true, completion: nil)
     }
     
     
     @objc func photos() {
-        self.showImageController(isCameraSelected: false)
+       showImageController(isCameraSelected: false)
         
     }
     
     @objc func camera() {
-        print("camera button pressed")
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                print("camera selected")
+                showImageController(isCameraSelected: true)
+        } else {
+            print("camera not available")
+        }
     }
     
     private func showImageController(isCameraSelected: Bool) {
