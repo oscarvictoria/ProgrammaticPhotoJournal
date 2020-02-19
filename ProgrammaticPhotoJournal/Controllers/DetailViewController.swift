@@ -37,9 +37,9 @@ class DetailViewController: UIViewController {
         }
     }
     
-    let dataPersistance = DataPersistence<ImageObject>(filename: "images.plist")
+    //let dataPersistance = DataPersistence<ImageObject>(filename: "images.plist")
     
-    var imageObjects = [ImageObject]()
+    //var imageObjects = [ImageObject]()
     
     var photosDelegate: AddPhotoToCollection?
     
@@ -68,13 +68,13 @@ class DetailViewController: UIViewController {
         detailView.photo.image = selectedImage
     }
     
-    private func loadImageObjects() {
-        do {
-            imageObjects = try dataPersistance.loadItems()
-        } catch {
-            print("error, could not load images")
-        }
-    }
+//    private func loadImageObjects() {
+//        do {
+//            imageObjects = try dataPersistance.loadItems()
+//        } catch {
+//            print("error, could not load images")
+//        }
+//    }
     
     func configureButtons() {
         detailView.cancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
@@ -108,16 +108,18 @@ class DetailViewController: UIViewController {
         // create an image object using the image selected
         let imageObject = ImageObject(imageText: detailView.textView.text ?? "" , imageData: resizedImageData, date: Date())
         
-        do {
-            try dataPersistance.createItem(imageObject)
-            print("photo succesfully saved")
-        } catch {
-            print("saving error")
-        }
+//        do {
+//            try dataPersistance.createItem(imageObject)
+//            print("photo succesfully saved")
+//        } catch {
+//            print("saving error")
+//        }
         
-        loadImageObjects()
+//        loadImageObjects()
         
-        photosDelegate?.updateCollectionView(old: nil, new: imageObject, photoState: photoState)
+        photosDelegate?.updateCollectionView(old: self.imageObject, new: imageObject, photoState: photoState)
+        
+        
         
         self.dismiss(animated: true, completion: nil)
     }
