@@ -37,8 +37,6 @@ class DetailViewController: UIViewController {
         }
     }
     
-    
-    
     let dataPersistance = DataPersistence<ImageObject>(filename: "images.plist")
     
     var imageObjects = [ImageObject]()
@@ -53,15 +51,21 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        guard let image = imageObject?.imageData else {
-                 return
-             }
-        detailView.photo.image = UIImage(data: image)
         configureButtons()
         imagePickerController.delegate = self
         detailView.textView.delegate = self
         detailView.textView.text = "Caption Goes Here"
         detailView.textView.textColor = UIColor.lightGray
+        updateUI()
+    }
+    
+    func updateUI() {
+        guard let image = imageObject?.imageData else {
+            return
+        }
+        detailView.photo.image = UIImage(data: image)
+        detailView.textView.text = imageObject?.imageText
+        detailView.photo.image = selectedImage
     }
     
     private func loadImageObjects() {
@@ -103,7 +107,7 @@ class DetailViewController: UIViewController {
         
         // create an image object using the image selected
         let imageObject = ImageObject(imageText: detailView.textView.text ?? "" , imageData: resizedImageData, date: Date())
-
+        
         do {
             try dataPersistance.createItem(imageObject)
             print("photo succesfully saved")
@@ -162,7 +166,7 @@ extension DetailViewController: UITextViewDelegate {
             textView.textColor = UIColor.black
         }
     }
-  
+    
 }
 
 
